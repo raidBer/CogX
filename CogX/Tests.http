@@ -1,0 +1,159 @@
+### WORKFLOW COMPLET - Test des 3 jeux
+@baseUrl = https://localhost:7049
+
+### 1. Créer Alice
+# @name createAlice
+POST {{baseUrl}}/api/player
+Content-Type: application/json
+
+{
+  "pseudo": "Alice"
+}
+
+###
+@aliceId = {{createAlice.response.body.$.id}}
+
+### 2. Créer Bob
+# @name createBob
+POST {{baseUrl}}/api/player
+Content-Type: application/json
+
+{
+  "pseudo": "Bob"
+}
+
+###
+@bobId = {{createBob.response.body.$.id}}
+
+### 3. Créer un lobby pour MORPION
+# @name createLobby
+POST {{baseUrl}}/api/lobby
+Content-Type: application/json
+
+{
+  "playerId": "{{aliceId}}",
+  "gameType": "Morpion",
+  "maxPlayers": 2,
+  "password": null
+}
+
+###
+@lobbyId = {{createLobby.response.body.$.lobbyId}}
+
+### 4. Bob rejoint le lobby
+POST {{baseUrl}}/api/lobby/{{lobbyId}}/join
+Content-Type: application/json
+
+{
+  "playerId": "{{bobId}}",
+  "password": null
+}
+
+###
+
+### 5. Alice démarre la partie
+# @name startGame
+POST {{baseUrl}}/api/lobby/{{lobbyId}}/start
+Content-Type: application/json
+
+"{{aliceId}}"
+
+###
+@gameSessionId = {{startGame.response.body.$.gameSessionId}}
+
+### 6. Créer un lobby pour SPEED TYPING
+POST {{baseUrl}}/api/lobby
+Content-Type: application/json
+
+{
+  "playerId": "{{aliceId}}",
+  "gameType": "SpeedTyping",
+  "maxPlayers": 4,
+  "password": null
+}
+
+###
+
+### 7. Créer un lobby pour PUISSANCE 4
+POST {{baseUrl}}/api/lobby
+Content-Type: application/json
+
+{
+  "playerId": "{{aliceId}}",
+  "gameType": "Puissance4",
+  "maxPlayers": 2,
+  "password": null
+}
+
+###
+
+### LEADERBOARD
+
+### 8. Ajouter un score (après une partie)
+POST {{baseUrl}}/api/leaderboard
+Content-Type: application/json
+
+{
+  "gameType": "SpeedTyping",
+  "playerId": "{{aliceId}}",
+  "score": 1500,
+  "time": "00:00:45.2"
+}
+
+###
+
+### 9. Voir le leaderboard
+GET {{baseUrl}}/api/leaderboard/SpeedTyping?top=10&playerId={{aliceId}}
+
+###
+
+### ADMIN / HISTORIQUE
+
+### 10. Voir l'historique d'une partie
+GET {{baseUrl}}/api/admin/game-history/{{gameSessionId}}
+
+###
+
+### 11. Voir toutes les sessions
+GET {{baseUrl}}/api/admin/game-sessions?gameType=Morpion&limit=20
+
+###
+
+### 12. Stats de la plateforme
+GET {{baseUrl}}/api/admin/platform-stats
+
+###
+
+### LOBBIES
+
+### 13. Voir tous les lobbies publics
+GET {{baseUrl}}/api/lobby
+
+###
+
+### 14. Voir les détails d'un lobby
+GET {{baseUrl}}/api/lobby/{{lobbyId}}?playerId={{aliceId}}
+
+###
+
+### 15. Supprimer un lobby (host seulement)
+DELETE {{baseUrl}}/api/lobby/{{lobbyId}}?hostId={{aliceId}}
+
+###
+
+### LEADERBOARD AVANCÉ
+
+### 16. Historique des scores d'Alice
+GET {{baseUrl}}/api/leaderboard/player/{{aliceId}}?gameType=SpeedTyping
+
+###
+
+### 17. Stats de tous les jeux
+GET {{baseUrl}}/api/leaderboard/games
+
+###
+
+### 18. Exporter l'historique d'une partie (JSON)
+GET {{baseUrl}}/api/admin/export/{{gameSessionId}}
+
+###
