@@ -25,12 +25,12 @@ builder.Services.AddScoped<IConnect4Service, Connect4Service>();
 // SignalR
 builder.Services.AddSignalR();
 
-// CORS pour le front-end
+// CORS - Configuration permissive pour le développement
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
+    options.AddPolicy("DevelopmentCorsPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:5173") // React/Vite
+        policy.SetIsOriginAllowed(origin => true) // Accepte toutes les origins en dev
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -46,9 +46,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+// CORS - Doit être AVANT UseHttpsRedirection et UseAuthorization
+app.UseCors("DevelopmentCorsPolicy");
 
-app.UseCors();
+app.UseHttpsRedirection();
 
 app.UseAuthorization();
 

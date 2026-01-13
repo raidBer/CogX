@@ -23,12 +23,19 @@ namespace CogX.Controllers
 
         // GET /api/lobby - Liste des lobbies publics en attente
         [HttpGet]
-        public async Task<ActionResult<List<LobbyDto>>> GetPublicLobbies()
+        public async Task<ActionResult<List<LobbyDto>>> GetPublicLobbies([FromQuery] string? gameType = null)
         {
-            var lobbies = await _context.Lobbies
+            var query = _context.Lobbies
                 .Include(l => l.Host)
                 .Include(l => l.Players)
-                .Where(l => l.Status == LobbyStatus.Waiting && l.Password == null)
+                .Where(l => l.Status == LobbyStatus.Waiting && l.Password == null);
+
+            if (!string.IsNullOrWhiteSpace(gameType))
+            {
+                query = query.Where(l => l.GameType == gameType);
+            }
+
+            var lobbies = await query
                 .Select(l => new LobbyDto
                 {
                     Id = l.Id,
@@ -69,6 +76,28 @@ namespace CogX.Controllers
                 IsHost = lobby.HostId == playerId,
                 Status = lobby.Status.ToString()
             });
+        }
+
+        // GET /api/lobby/{id}/players - Liste des joueurs dans un lobby
+        [HttpGet("{id}/players")]
+        public async Task<ActionResult<List<PlayerDto>>> GetLobbyPlayers(Guid id)
+        {
+            var lobby = await _context.Lobbies
+                .Include(l => l.Players)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (lobby == null)
+            {
+                return NotFound("Lobby not found");
+            }
+
+            var players = lobby.Players.Select(p => new PlayerDto
+            {
+                Id = p.Id,
+                Pseudo = p.Pseudo
+            }).ToList();
+
+            return Ok(players);
         }
 
         // POST /api/lobby - Créer un lobby
@@ -160,6 +189,56 @@ namespace CogX.Controllers
             // Notifier tous les joueurs du lobby
             await _hubContext.Clients.Group(id.ToString())
                 .SendAsync("PlayerJoined", new PlayerDto
+                {
+                    Id = player.Id,
+                    Pseudo = player.Pseudo
+                });
+
+            return Ok();
+        }
+
+        // POST /api/lobby/{id}/leave - Quitter un lobby
+        [HttpPost("{id}/leave")]
+        public async Task<ActionResult> LeaveLobby(Guid id, [FromBody] Guid playerId)
+        {
+            var lobby = await _context.Lobbies
+                .Include(l => l.Players)
+                .FirstOrDefaultAsync(l => l.Id == id);
+
+            if (lobby == null)
+            {
+                return NotFound("Lobby not found");
+            }
+
+            if (lobby.Status != LobbyStatus.Waiting)
+            {
+                return BadRequest("Cannot leave a lobby that has already started");
+            }
+
+            var player = lobby.Players.FirstOrDefault(p => p.Id == playerId);
+            if (player == null)
+            {
+                return NotFound("Player not in this lobby");
+            }
+
+            // Si c'est le host qui part, supprimer le lobby
+            if (lobby.HostId == playerId)
+            {
+                _context.Lobbies.Remove(lobby);
+                await _context.SaveChangesAsync();
+
+                await _hubContext.Clients.All.SendAsync("LobbyDeleted", id);
+                await _hubContext.Clients.Group(id.ToString()).SendAsync("LobbyClosed", "Host left the lobby");
+
+                return Ok(new { Message = "Lobby deleted (host left)" });
+            }
+
+            // Sinon, retirer le joueur
+            lobby.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            await _hubContext.Clients.Group(id.ToString())
+                .SendAsync("PlayerLeft", new PlayerDto
                 {
                     Id = player.Id,
                     Pseudo = player.Pseudo

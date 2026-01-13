@@ -17,6 +17,23 @@ namespace CogX.Controllers
             _context = context;
         }
 
+        // GET /api/player - Liste tous les joueurs
+        [HttpGet]
+        public async Task<ActionResult<List<PlayerDto>>> GetAllPlayers([FromQuery] int limit = 100)
+        {
+            var players = await _context.Players
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(limit)
+                .Select(p => new PlayerDto
+                {
+                    Id = p.Id,
+                    Pseudo = p.Pseudo
+                })
+                .ToListAsync();
+
+            return Ok(players);
+        }
+
         // POST /api/player - Créer un joueur (saisir le pseudo)
         [HttpPost]
         public async Task<ActionResult<PlayerDto>> CreatePlayer(CreatePlayerRequest request)
@@ -59,6 +76,22 @@ namespace CogX.Controllers
                 Id = player.Id,
                 Pseudo = player.Pseudo
             });
+        }
+
+        // DELETE /api/player/{id} - Supprimer un joueur (GDPR)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeletePlayer(Guid id)
+        {
+            var player = await _context.Players.FindAsync(id);
+            if (player == null)
+            {
+                return NotFound("Player not found");
+            }
+
+            _context.Players.Remove(player);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Player deleted successfully" });
         }
     }
 }
