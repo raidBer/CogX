@@ -1,35 +1,35 @@
-# ?? CogX - Plateforme de Jeux Multijoueurs en Temps Réel
+#  CogX - Plateforme de Jeux Multijoueurs en Temps RÃ©el
 
 Projet .NET 10 avec SignalR - TP .NET M2 GIL 2025-2026
 
 ---
 
-## ?? Jeux Implémentés
+##  Jeux ImplÃ©mentÃ©s
 
 - **Morpion (Tic-Tac-Toe)** - 2 joueurs, grille 3x3
-- **Speed Typing** - Course de dactylographie en temps réel
+- **Speed Typing** - Course de dactylographie en temps rÃ©el
 - **Puissance 4 (Connect Four)** - 2 joueurs, grille 6x7
 
 ---
 
-## ??? Technologies
+##  Technologies
 
 - **.NET 10**
 - **Entity Framework Core 10.0**
-- **SignalR** (temps réel)
+- **SignalR** (temps rÃ©el)
 - **SQL Server LocalDB**
 - **Swagger/OpenAPI**
 
 ---
 
-## ? Installation Rapide
+##  Installation Rapide
 
-### Prérequis
+### PrÃ©requis
 
 - **Visual Studio 2022** (ou Visual Studio Code + .NET SDK 10)
 - **SQL Server LocalDB** (inclus avec Visual Studio)
 
-### Étapes
+### Ã‰tapes
 
 1. **Cloner le repository**
 ```bash
@@ -46,7 +46,7 @@ cd CogX
 dotnet restore
 ```
 
-4. **Créer la base de données**
+4. **CrÃ©er la base de donnÃ©es**
 ```bash
 cd CogX
 dotnet ef database update
@@ -59,16 +59,16 @@ dotnet ef database update
 dotnet run --project CogX/CogX.csproj
 ```
 
-6. **Accéder à Swagger**
+6. **AccÃ©der Ã  Swagger**
 ```
 https://localhost:7049/swagger
 ```
 
 ---
 
-## ?? Tester l'API
+##  Tester l'API
 
-### Option 1 : Swagger UI (Recommandé)
+### Option 1 : Swagger UI (RecommandÃ©)
 
 1. Ouvrez `https://localhost:7049/swagger`
 2. Testez les endpoints dans l'interface graphique
@@ -76,12 +76,12 @@ https://localhost:7049/swagger
 ### Option 2 : Fichier Tests.http
 
 1. Ouvrez `CogX/Tests.http` dans Visual Studio
-2. Cliquez sur "Send Request" au-dessus de chaque requête
+2. Cliquez sur "Send Request" au-dessus de chaque requÃªte
 
 ### Option 3 : Ligne de commande
 
 ```bash
-# Créer un joueur
+# CrÃ©er un joueur
 curl -X POST https://localhost:7049/api/player \
   -H "Content-Type: application/json" \
   -d '{"pseudo":"Alice"}'
@@ -92,18 +92,18 @@ curl https://localhost:7049/api/lobby
 
 ---
 
-## ?? Endpoints Principaux
+##  Endpoints Principaux
 
 ### API REST
 
 ```
-POST   /api/player                    - Créer un joueur
-GET    /api/player/{id}               - Récupérer un joueur
+POST   /api/player                    - CrÃ©er un joueur
+GET    /api/player/{id}               - RÃ©cupÃ©rer un joueur
 
 GET    /api/lobby                     - Lister les lobbies publics
-POST   /api/lobby                     - Créer un lobby
+POST   /api/lobby                     - CrÃ©er un lobby
 POST   /api/lobby/{id}/join           - Rejoindre un lobby
-POST   /api/lobby/{id}/start          - Démarrer la partie (host)
+POST   /api/lobby/{id}/start          - DÃ©marrer la partie (host)
 
 GET    /api/leaderboard/{gameType}    - Voir le classement
 POST   /api/leaderboard               - Ajouter un score
@@ -124,7 +124,7 @@ wss://localhost:7049/connect4hub       - Puissance 4
 
 ---
 
-## ??? Base de Données
+##  Base de DonnÃ©es
 
 ### Connexion
 
@@ -134,8 +134,8 @@ wss://localhost:7049/connect4hub       - Puissance 4
 
 ### Visualiser avec SSMS
 
-1. Téléchargez [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
-2. Connectez-vous à `(localdb)\mssqllocaldb`
+1. TÃ©lÃ©chargez [SQL Server Management Studio](https://learn.microsoft.com/en-us/sql/ssms/download-sql-server-management-studio-ssms)
+2. Connectez-vous Ã  `(localdb)\mssqllocaldb`
 3. Ouvrez la base `CogXDb`
 
 ### Explorer avec Visual Studio
@@ -146,13 +146,13 @@ wss://localhost:7049/connect4hub       - Puissance 4
 
 ### Script SQL d'exploration
 
-Exécutez `CogX/Database_Exploration.sql` dans SSMS pour voir toutes les statistiques.
+ExÃ©cutez `CogX/Database_Exploration.sql` dans SSMS pour voir toutes les statistiques.
 
 ---
 
-## ?? Workflow Typique
+##  Workflow Typique
 
-### 1. Créer des joueurs
+### 1. CrÃ©er des joueurs
 
 ```http
 POST /api/player
@@ -161,7 +161,7 @@ POST /api/player
 }
 ```
 
-### 2. Créer un lobby
+### 2. CrÃ©er un lobby
 
 ```http
 POST /api/lobby
@@ -183,7 +183,7 @@ POST /api/lobby/{lobbyId}/join
 }
 ```
 
-### 4. Le host démarre la partie
+### 4. Le host dÃ©marre la partie
 
 ```http
 POST /api/lobby/{lobbyId}/start
@@ -192,11 +192,11 @@ POST /api/lobby/{lobbyId}/start
 
 ### 5. Jouer via SignalR
 
-Connectez-vous au Hub correspondant (`/tictactoehub`, etc.) et envoyez des actions en temps réel.
+Connectez-vous au Hub correspondant (`/tictactoehub`, etc.) et envoyez des actions en temps rÃ©el.
 
 ---
 
-## ?? Architecture
+##  Architecture
 
 ```
 CogX/
@@ -205,19 +205,19 @@ CogX/
 ?   ??? LobbyController.cs
 ?   ??? LeaderboardController.cs
 ?   ??? AdminController.cs
-??? Hubs/                 # SignalR temps réel
+??? Hubs/                 # SignalR temps rÃ©el
 ?   ??? LobbyHub.cs
 ?   ??? Games/
 ?       ??? TicTacToeHub.cs
 ?       ??? SpeedTypingHub.cs
 ?       ??? Connect4Hub.cs
-??? Services/             # Logique métier
+??? Services/             # Logique mÃ©tier
 ?   ??? GameHistoryService.cs
 ?   ??? Games/
 ?       ??? TicTacToeService.cs
 ?       ??? SpeedTypingService.cs
 ?       ??? Connect4Service.cs
-??? Models/               # Entités
+??? Models/               # EntitÃ©s
 ?   ??? Player.cs
 ?   ??? Lobby.cs
 ?   ??? GameSession.cs
@@ -225,36 +225,34 @@ CogX/
 ??? DTOs/                 # Data Transfer Objects
 ??? Data/
 ?   ??? CogXDbContext.cs  # Entity Framework
-??? Migrations/           # Schéma de la BDD
+??? Migrations/           # SchÃ©ma de la BDD
 ```
 
 ---
 
-## ?? Fonctionnalités Implémentées
+##  FonctionnalitÃ©s ImplÃ©mentÃ©es
 
-| Fonctionnalité | Points | Statut |
+| FonctionnalitÃ© | Points | Statut |
 |----------------|--------|--------|
-| **Morpion** | 3 | ? |
-| **Speed Typing** | 3 | ? |
-| **Puissance 4** | 3 | ? |
-| **Leaderboard** | 2 | ? |
-| **Historique actions** | 3 | ? |
-| **Liste lobbies temps réel** | 3 | ? |
-| **Lobbies privés (password)** | - | ? |
-| **Total Backend** | **17** | ? |
+| **Morpion** | 3 | done |
+| **Speed Typing** | 3 | done |
+| **Puissance 4** | 3 | done |
+| **Leaderboard** | 2 | done |
+| **Historique actions** | 3 | done |
+| **Liste lobbies temps rÃ©el** | 3 | done |
+| **Lobbies privÃ©s (password)** | - | done |
+| **Responsive design** | 3 | done |
+| **Total Backend** | **17** | - |
 
----
-
-## ?? Dépannage
 
 ### Erreur : "Cannot connect to database"
 
 ```bash
-# Vérifier que LocalDB est démarré
+# VÃ©rifier que LocalDB est dÃ©marrÃ©
 sqllocaldb info
 sqllocaldb start MSSQLLocalDB
 
-# Recréer la base
+# RecrÃ©er la base
 cd CogX
 dotnet ef database drop --force
 dotnet ef database update
@@ -274,13 +272,13 @@ dotnet restore
 dotnet build
 ```
 
-### Port déjà utilisé
+### Port dÃ©jÃ  utilisÃ©
 
 Modifiez le port dans `CogX/Properties/launchSettings.json`
 
 ---
 
-## ?? Ressources
+##  Ressources
 
 - [Documentation .NET 10](https://learn.microsoft.com/en-us/dotnet/)
 - [SignalR Documentation](https://learn.microsoft.com/en-us/aspnet/core/signalr/)
@@ -289,7 +287,7 @@ Modifiez le port dans `CogX/Properties/launchSettings.json`
 
 ---
 
-## ????? Développement
+## ????? DÃ©veloppement
 
 ### Ajouter une migration
 
@@ -305,41 +303,33 @@ Les logs s'affichent dans la console ou dans **Output ? Debug** dans Visual Stud
 
 ### Modifier la configuration
 
-- Chaîne de connexion : `appsettings.json`
+- ChaÃ®ne de connexion : `appsettings.json`
 - Ports de l'API : `Properties/launchSettings.json`
 - CORS : `Program.cs`
 
 ---
 
-## ?? TODO Frontend (Non implémenté)
+##  TODO Frontend (Non implÃ©mentÃ©)
 
 - [ ] Page d'accueil (saisie pseudo)
 - [ ] Liste des jeux disponibles
-- [ ] Liste des lobbies en temps réel
+- [ ] Liste des lobbies en temps rÃ©el
 - [ ] Pages de jeu (React + Tailwind)
 - [ ] Leaderboard UI
-- [ ] Responsive design
 - [ ] Multilingue (FR/EN)
 
 ---
 
-## ?? Licence
+##  Licence
 
-Projet académique - M2 GIL 2025-2026
+Projet acadÃ©mique - M2 GIL 2025-2026
 
 ---
 
-## ?? Contributeurs
+## Contributeurs
 
-- Développeur : [raidBer](https://github.com/raidBer)
+- DÃ©veloppeur : [raidBer](https://github.com/raidBer) [kamy1tb](https://github.com/Kamy1tb)
 - Projet : TP .NET - Plateforme de jeux multijoueurs
 
 ---
 
-## ?? Support
-
-Pour toute question, créez une [Issue](https://github.com/raidBer/CogX/issues) sur GitHub.
-
----
-
-**Bon développement ! ??**
