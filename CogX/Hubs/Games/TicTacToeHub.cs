@@ -159,7 +159,8 @@ namespace CogX.Hubs.Games
                     if (session != null)
                     {
                         session.FinishedAt = DateTime.UtcNow;
-                        session.GameState = JsonSerializer.Serialize(gameState);
+                        // Serialize the DTO instead of gameState to avoid multidimensional array issue
+                        session.GameState = JsonSerializer.Serialize(gameDto);
                         await _context.SaveChangesAsync();
                     }
 
@@ -253,11 +254,15 @@ namespace CogX.Hubs.Games
                     new { Forfeiter = forfeiter?.Pseudo, Winner = winner?.Pseudo }
                 );
 
+                // Create DTO for serialization
+                var gameDto = MapToDto(gameState, players);
+
                 var session = await _context.GameSessions.FindAsync(gameSessionId);
                 if (session != null)
                 {
                     session.FinishedAt = DateTime.UtcNow;
-                    session.GameState = JsonSerializer.Serialize(gameState);
+                    // Serialize the DTO instead of gameState to avoid multidimensional array issue
+                    session.GameState = JsonSerializer.Serialize(gameDto);
                     await _context.SaveChangesAsync();
                 }
 
@@ -282,10 +287,21 @@ namespace CogX.Hubs.Games
             var player1 = players.FirstOrDefault(p => p.Id == state.Player1Id);
             var player2 = players.FirstOrDefault(p => p.Id == state.Player2Id);
 
+            // Convert multidimensional array to jagged array for JSON serialization
+            var jaggedBoard = new string[3][];
+            for (int i = 0; i < 3; i++)
+            {
+                jaggedBoard[i] = new string[3];
+                for (int j = 0; j < 3; j++)
+                {
+                    jaggedBoard[i][j] = state.Board[i, j];
+                }
+            }
+
             return new TicTacToeGameDto
             {
                 GameSessionId = state.GameSessionId,
-                Board = state.Board,
+                Board = jaggedBoard,
                 Player1 = new PlayerGameInfoDto
                 {
                     Id = state.Player1Id,

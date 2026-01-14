@@ -140,14 +140,19 @@ namespace CogX.Hubs.Games
         {
             try
             {
+                _logger.LogInformation("UpdateProgress received: SessionId={SessionId}, PlayerId={PlayerId}, Chars={Chars}, Errors={Errors}", 
+                    gameSessionId, playerId, charactersTyped, errorCount);
+
                 if (!_activeGames.TryGetValue(gameSessionId, out var gameState))
                 {
+                    _logger.LogWarning("Game not found for session {SessionId}", gameSessionId);
                     await Clients.Caller.SendAsync("GameError", "Game not found");
                     return;
                 }
 
                 if (!gameState.IsStarted)
                 {
+                    _logger.LogWarning("Race not started yet for session {SessionId}", gameSessionId);
                     await Clients.Caller.SendAsync("GameError", "Race not started yet");
                     return;
                 }
@@ -193,6 +198,8 @@ namespace CogX.Hubs.Games
                 // Si le joueur vient de finir
                 if (playerProgress.HasFinished && previousProgress < gameState.TextToType.Length)
                 {
+                    _logger.LogInformation("Player {PlayerId} finished with rank {Rank}", playerId, playerProgress.Rank);
+                    
                     await Clients.Group(lobbyId).SendAsync("PlayerFinished", new
                     {
                         PlayerId = playerId,

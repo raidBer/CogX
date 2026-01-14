@@ -3,7 +3,7 @@ namespace CogX.DTOs.Games
     public class Connect4GameDto
     {
         public Guid GameSessionId { get; set; }
-        public int[,] Board { get; set; } = new int[6, 7];
+        public int[][] Board { get; set; } = new int[6][];
         public PlayerGameInfoDto Player1 { get; set; } = new();
         public PlayerGameInfoDto Player2 { get; set; } = new();
         public Guid CurrentPlayerTurn { get; set; }
@@ -12,6 +12,15 @@ namespace CogX.DTOs.Games
         public bool IsGameOver { get; set; }
         public List<WinningPositionDto>? WinningLine { get; set; }
         public int TotalMoves { get; set; }
+
+        public Connect4GameDto()
+        {
+            // Initialize jagged array (6 rows x 7 columns)
+            for (int i = 0; i < 6; i++)
+            {
+                Board[i] = new int[7];
+            }
+        }
     }
 
     public class Connect4MoveRequest

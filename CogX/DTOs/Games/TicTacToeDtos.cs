@@ -3,7 +3,7 @@ namespace CogX.DTOs.Games
     public class TicTacToeGameDto
     {
         public Guid GameSessionId { get; set; }
-        public string[,] Board { get; set; } = new string[3, 3];
+        public string[][] Board { get; set; } = new string[3][];
         public PlayerGameInfoDto Player1 { get; set; } = new();
         public PlayerGameInfoDto Player2 { get; set; } = new();
         public Guid CurrentPlayerTurn { get; set; }
@@ -11,6 +11,15 @@ namespace CogX.DTOs.Games
         public bool IsDraw { get; set; }
         public bool IsGameOver { get; set; }
         public List<WinningPositionDto>? WinningLine { get; set; }
+
+        public TicTacToeGameDto()
+        {
+            // Initialize jagged array
+            for (int i = 0; i < 3; i++)
+            {
+                Board[i] = new string[3];
+            }
+        }
     }
 
     public class PlayerGameInfoDto
